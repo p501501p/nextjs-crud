@@ -107,3 +107,4 @@ npm run dev
 │   └── migrations/         # คำสั่ง migration สำหรับฐานข้อมูล
 └── prisma7.config.ts       # การตั้งค่า Prisma CLI
 ```
+..
