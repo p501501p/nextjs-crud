@@ -1,0 +1,18 @@
+# Dependencies and generated build output
+**/node_modules/
+**/.next/
+**/out/
+**/build/
+
+# Local secrets
+.env*
+!.env.example
+
+# Local SQLite databases
+*.db
+*.db-journal
+
+# Logs and OS files
+npm-debug.log*
+.DS_Store
+*.tsbuildinfo
