@@ -1,8 +1,12 @@
 import prisma from "@/app/lib/prisma";
 import DeleteButton from "./delete-button";
 import Link from "next/link";
+import { connection } from "next/server";
+import { Suspense } from "react";
 
-export default async function StudentsPage() {
+async function StudentsContent() {
+  await connection();
+
   const students = await prisma.student.findMany({
     orderBy: {
       id: "asc",
@@ -150,5 +154,21 @@ export default async function StudentsPage() {
         )}
       </section>
     </main>
+  );
+}
+
+export default function StudentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 lg:py-14">
+          <div className="animate-pulse rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-500 shadow-sm">
+            กำลังโหลดข้อมูลนักศึกษา...
+          </div>
+        </main>
+      }
+    >
+      <StudentsContent />
+    </Suspense>
   );
 }

@@ -2,6 +2,7 @@ import prisma from "@/app/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { connection } from "next/server";
 
 type EditStudentPageProps = {
   params: Promise<{
@@ -42,6 +43,8 @@ async function EditStudentContent({ params }: EditStudentPageProps) {
   const { id } = await params;
 
   const studentId = Number(id);
+
+  await connection();
 
   const student = await prisma.student.findUnique({
     where: {
