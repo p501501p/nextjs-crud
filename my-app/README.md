@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ระบบจัดการข้อมูลนักศึกษา
 
-## Getting Started
 
-First, run the development server:
+## 1. วัตถุประสงค์
+
+พัฒนาเว็บแอปสำหรับจัดเก็บและจัดการข้อมูลนักศึกษา เพื่อฝึกการทำงานร่วมกันระหว่างส่วนติดต่อผู้ใช้ การประมวลผลฝั่งเซิร์ฟเวอร์ และฐานข้อมูล โดยรองรับการทำงาน CRUD ได้แก่ เพิ่ม อ่าน แก้ไข และลบข้อมูล
+
+## 2. เครื่องมือและเทคโนโลยี
+
+- **Next.js 16 และ React 19** — สร้างหน้าเว็บและจัดการการทำงานฝั่งเซิร์ฟเวอร์
+- **TypeScript** — เพิ่มชนิดข้อมูลและช่วยตรวจสอบข้อผิดพลาดระหว่างพัฒนา
+- **Prisma ORM 7** — กำหนด schema และติดต่อฐานข้อมูล
+- **SQLite** — จัดเก็บข้อมูลในไฟล์ฐานข้อมูลภายในเครื่อง
+- **Tailwind CSS** — จัดรูปแบบหน้าจอ
+
+## 3. ความสามารถของระบบ
+
+- แสดงรายการนักศึกษาทั้งหมด เรียงตาม ID และแสดงจำนวนนักศึกษา
+- เพิ่มข้อมูลนักศึกษา
+- แก้ไขข้อมูลนักศึกษาที่เลือก
+- ลบข้อมูลนักศึกษา
+- กำหนดให้รหัสนักศึกษาไม่ซ้ำกัน และรองรับอีเมลที่ไม่กรอกได้
+
+## 4. โครงสร้างข้อมูล
+
+ระบบใช้ตาราง `Student` โดยมีข้อมูลดังนี้:
+
+| ฟิลด์ | ความหมาย |
+|---|---|
+| `id` | รหัสรายการ สร้างอัตโนมัติและใช้เป็น Primary Key |
+| `studentCode` | รหัสนักศึกษา ต้องไม่ซ้ำกัน |
+| `name` | ชื่อ-นามสกุล |
+| `email` | อีเมล ไม่บังคับกรอก |
+| `major` | สาขาวิชา |
+| `year` | ชั้นปี |
+| `status` | สถานะนักศึกษา ค่าเริ่มต้นเป็นกำลังศึกษา |
+| `createdAt` | วันและเวลาที่สร้างรายการ |
+| `updatedAt` | วันและเวลาที่แก้ไขรายการล่าสุด |
+
+โครงสร้างตารางกำหนดไว้ใน `prisma/schema.prisma` และ migration สำหรับสร้างตารางอยู่ใน `prisma/migrations/`
+
+## 5. การติดตั้งและเริ่มใช้งาน
+
+### สิ่งที่ต้องเตรียม
+
+- ติดตั้ง [Node.js](https://nodejs.org/) ซึ่งมาพร้อม npm
+- แตกไฟล์หรือ clone repository ลงในเครื่อง
+
+### ขั้นตอนติดตั้ง
+
+เปิด Terminal ที่โฟลเดอร์หลักของโปรเจกต์ ซึ่งมี `prisma7.config.ts` และโฟลเดอร์ `prisma/` แล้วติดตั้ง dependencies ของ Prisma:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+สร้างไฟล์ `.env` ที่โฟลเดอร์หลักของโปรเจกต์ โดยกำหนดตำแหน่งฐานข้อมูล SQLite:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+DATABASE_URL="file:./dev.db"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+สร้างตารางจาก migration ที่มีอยู่ และสร้าง Prisma Client:
 
-## Learn More
+```bash
+npx prisma migrate deploy --config prisma7.config.ts
+npx prisma generate --config prisma7.config.ts
+```
 
-To learn more about Next.js, take a look at the following resources:
+ติดตั้ง dependencies ของเว็บแอปและเริ่มเซิร์ฟเวอร์สำหรับทดลองใช้งาน:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cd my-app
+npm install
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+เปิดเบราว์เซอร์ไปที่ [http://localhost:3000/students](http://localhost:3000/students)
 
-## Deploy on Vercel
+> ฐานข้อมูลเริ่มต้นคือไฟล์ `dev.db` ในโฟลเดอร์หลักของโปรเจกต์ ไฟล์ `.env` และฐานข้อมูลนี้เป็นไฟล์เฉพาะในเครื่อง ไม่ได้เก็บไว้ใน Git
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 6. วิธีทดลองใช้งานและสาธิต
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. เปิดหน้า `/students` เพื่อดูรายการนักศึกษาที่บันทึกไว้
+2. กด **เพิ่มนักศึกษา** แล้วกรอกรหัสนักศึกษา ชื่อ สาขา และชั้นปี (อีเมลเป็นข้อมูลไม่บังคับ) จากนั้นกดบันทึก
+3. ตรวจสอบว่ารายการใหม่ปรากฏในหน้ารายชื่อและจำนวนรายการเพิ่มขึ้น
+4. กด **แก้ไข** ที่รายการ เปลี่ยนข้อมูล แล้วบันทึกเพื่อตรวจสอบการปรับปรุงข้อมูล
+5. กด **ลบ** ที่รายการและยืนยันการลบ เพื่อตรวจสอบว่ารายการถูกนำออกจากหน้ารายชื่อ
+
+## 7. ภาพรวมการทำงาน
+
+1. ผู้ใช้เปิดหน้ารายชื่อนักศึกษาในเว็บแอป
+2. หน้าเว็บเรียกใช้ Prisma Client เพื่ออ่านหรือเปลี่ยนข้อมูลใน SQLite
+3. การเพิ่ม แก้ไข และลบข้อมูลทำงานที่ฝั่งเซิร์ฟเวอร์
+4. หลังเปลี่ยนข้อมูล ระบบกลับไปยังหน้ารายชื่อและแสดงข้อมูลล่าสุด
+
+## 8. โครงสร้างโฟลเดอร์หลัก
+
+```text
+.
+├── my-app/                 # เว็บแอป Next.js
+│   └── app/
+│       ├── students/       # หน้ารายชื่อ เพิ่ม แก้ไข และลบข้อมูล
+│       └── lib/prisma.ts   # การตั้งค่า Prisma Client สำหรับแอป
+├── prisma/
+│   ├── schema.prisma       # โครงสร้างข้อมูล
+│   └── migrations/         # คำสั่ง migration สำหรับฐานข้อมูล
+└── prisma7.config.ts       # การตั้งค่า Prisma CLI
+```
